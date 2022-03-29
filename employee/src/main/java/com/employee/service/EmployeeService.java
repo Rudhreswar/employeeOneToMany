@@ -32,6 +32,9 @@ public class EmployeeService {
     private EmployeeSalaryRepository employeeSalaryRepository;
 
     public void addDetails(Employee employee) {
+
+        //Adding Details ..............................................................add ...!
+
         EmployeeEntity employeeEntity = new EmployeeEntity();
 
         employeeEntity.setEmployeeId(employee.getId());
@@ -73,11 +76,14 @@ public class EmployeeService {
 
     public Set<Employee> getEmployeeByCountry(String country) {
         LinkedList<EmployeeAddressEntity> employeeAddressEntityLinkedList = employeeAddressRepository.findEmployeeAddressByCountry(country);
-        Set<EmployeeEntity> employeeEntitySet = employeeAddressEntityLinkedList.stream().map(EmployeeAddressEntity::getEmployeeEntity).collect(Collectors.toSet());
-        return employeeEntitySet.stream().map(this::getEmployee).collect(Collectors.toSet());
+        Set<EmployeeEntity> employeeEntitySet = employeeAddressEntityLinkedList.stream()
+                .map(EmployeeAddressEntity::getEmployeeEntity)
+                .collect(Collectors.toSet());
+        return employeeEntitySet.stream().map(this::setEmployee)
+                .collect(Collectors.toSet());
     }
 
-    public Employee getEmployee(EmployeeEntity employeeEntity) {
+    public Employee setEmployee(EmployeeEntity employeeEntity) {
         Employee employeeDetails = new Employee();
         employeeDetails.setId(employeeEntity.getEmployeeId());
         employeeDetails.setEmpName(employeeEntity.getEmpName());
@@ -100,6 +106,7 @@ public class EmployeeService {
         });
         employeeDetails.setEmployeeAddresses(employeeAddresses);
         List<EmployeeAttendance> employeeAttendances = new LinkedList<>();
+
         employeeEntity.getEmployeeAttendanceEntities().forEach(employeeAttendanceEntity -> {
             EmployeeAttendance employeeAttendance = new EmployeeAttendance();
             employeeAttendance.setEmployeeId(employeeAttendanceEntity.getId());
@@ -115,16 +122,20 @@ public class EmployeeService {
     public Set<Employee> getEmployeeByCity(String city1, String city2) {
         List<EmployeeAddressEntity> employeeAddressEntities = employeeAddressRepository.findByCityOrCity(city1, city2);
         Set<String> stringSet = employeeAddressEntities.stream()
-                .map(EmployeeAddressEntity::getEmployeeEntity).map(EmployeeEntity::getEmployeeId)
+                .map(EmployeeAddressEntity::getEmployeeEntity)
+                .map(EmployeeEntity::getEmployeeId)
                 .collect(Collectors.toSet());
 
         return stringSet.stream().map(eCity -> employeeEntityRepository.findById(eCity).orElse(null))
-                .filter(Objects::nonNull).map(this::getEmployee).collect(Collectors.toSet());
+                .filter(Objects::nonNull)
+                .map(this::setEmployee).collect(Collectors.toSet());
     }
 
     public Set<Employee> getEmployeeByCityAndCountry(String city, String country) {
         LinkedList<EmployeeAddressEntity> a = employeeAddressRepository.findByCityAndCountry(city, country);
-        return a.stream().map(EmployeeAddressEntity::getEmployeeEntity).map(this::getEmployee).collect(Collectors.toSet());
+        return a.stream().map(EmployeeAddressEntity::getEmployeeEntity)
+                .map(this::setEmployee)
+                .collect(Collectors.toSet());
     }
 
     public EmployeeReport getEmployeeWithSalary(EmployeeEntity employeeEntity) {
@@ -135,39 +146,51 @@ public class EmployeeService {
 
     public List<EmployeeReport> getEmployeeSalaryDetails() {
         List<EmployeeEntity> empDetails = employeeEntityRepository.findAll();
-        return empDetails.stream().map(this::getEmployeeWithSalary).collect(Collectors.toList());
+        return empDetails.stream().map(this::getEmployeeWithSalary)
+                .collect(Collectors.toList());
     }
 
     public List<EmployeeReport> getEmployeeSalaryDetails(String payable) {
 
-        LinkedList<EmployeeSalaryEntity> sal = employeeSalaryRepository.findByPayable(payable);
-        List<EmployeeEntity> emp = sal.stream().map(EmployeeSalaryEntity::getEmployeeEntity).collect(Collectors.toList());
-        return emp.stream().map(this::getEmployeeWithSalary).collect(Collectors.toList());
+        LinkedList<EmployeeSalaryEntity> salaryEntityLinkedList = employeeSalaryRepository.findByPayable(payable);
+        List<EmployeeEntity> emp = salaryEntityLinkedList.stream()
+                .map(EmployeeSalaryEntity::getEmployeeEntity)
+                .collect(Collectors.toList());
+
+        return emp.stream().map(this::getEmployeeWithSalary)
+                .collect(Collectors.toList());
     }
 
     public List<EmployeeHolidaysOffJan> getEmployeeNoOfDays(String date) {
-        List<EmployeeAttendanceEntity> empAtd = employeeAttendanceRepository.findAll();
-        Set<String> stringSet = empAtd.stream().filter(attendance -> attendance.getDate().contains(date))
+
+        List<EmployeeAttendanceEntity> employeeAttendanceEntityStream = employeeAttendanceRepository.findAll();
+        Set<String> stringSet = employeeAttendanceEntityStream.stream().filter(attendance -> attendance.getDate().contains(date))
                 .map(EmployeeAttendanceEntity::getEmployeeEntity).map(EmployeeEntity::getEmployeeId)
                 .collect(Collectors.toSet());
 
         List<Integer> size = new LinkedList<>();
 
         stringSet.forEach(empId -> {
-            List<EmployeeAttendanceEntity> e = empAtd.stream().filter(EmployeeAttendanceEntity::isHoliday)
-                    .filter(empAtd1 -> empAtd1.getEmployeeEntity().getEmployeeId() == (empId)).collect(Collectors.toList());
-            size.add(e.size());
+            List<EmployeeAttendanceEntity> collect = employeeAttendanceEntityStream.stream().filter(EmployeeAttendanceEntity::isHoliday)
+                    .filter(empAtd1 -> empAtd1.getEmployeeEntity().getEmployeeId() == (empId))
+                    .collect(Collectors.toList());
+            size.add(collect.size());
         });
-        List<EmployeeAttendanceEntity> empAtt = empAtd.stream().filter(EmployeeAttendanceEntity::isHoliday).collect(Collectors.toList());
-        System.out.println(empAtt);
+        List<EmployeeAttendanceEntity> empAtt = employeeAttendanceEntityStream.stream()
+                .filter(EmployeeAttendanceEntity::isHoliday)
+                .collect(Collectors.toList());
+
         Set<EmployeeEntity> employeeEntitySet = stringSet.stream().map(em -> employeeEntityRepository.findById(em).orElse(null)).collect(Collectors.toSet());
-        List<EmployeeHolidaysOffJan> employeeHolidaysOffJanList = new ArrayList<>();
+        List<EmployeeHolidaysOffJan> employeeHolidaysOffJanList = new LinkedList<>();
+
         AtomicInteger i = new AtomicInteger();
+
         employeeEntitySet.forEach(employeeEntity -> {
             EmployeeHolidaysOffJan employeeHolidaysOffJanCount = new EmployeeHolidaysOffJan(
                     employeeEntity.getEmployeeId(), employeeEntity.getEmpName(),
                     employeeEntity.getEmployeeAddressEntities().stream()
-                            .map(EmployeeAddressEntity::getPhoneNumber).collect(Collectors.toList()),
+                            .map(EmployeeAddressEntity::getPhoneNumber)
+                            .collect(Collectors.toList()),
                     employeeEntity.getEmployeeSalary().getSalary(), size.get(i.getAndIncrement()));
 
             employeeHolidaysOffJanList.add(employeeHolidaysOffJanCount);

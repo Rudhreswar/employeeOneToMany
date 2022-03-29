@@ -12,7 +12,11 @@ import java.util.Set;
 
 
 @RestController
+@RequestMapping("/employee")
+
 public class EmployeeController {
+
+
     @Autowired
     private EmployeeService employeeService;
 
@@ -21,37 +25,37 @@ public class EmployeeController {
         employeeService.addDetails(employee);
     }
 
-    @RequestMapping(value = "/get/{country}", method = RequestMethod.GET)
+    @RequestMapping(value = "/country/{country}", method = RequestMethod.GET)
     private Set<Employee> get(@PathVariable String country) {
         return employeeService.getEmployeeByCountry(country);
 
     }
 
-    @RequestMapping(value = "/get1/{city1}/{city2}", method = RequestMethod.GET)
+    @RequestMapping(value = "/city/{city1}/{city2}", method = RequestMethod.GET)
     private Set<Employee> getEmployeeByCity(@PathVariable String city1, @PathVariable String city2) {
         return employeeService.getEmployeeByCity(city1, city2);
 
     }
 
-    @RequestMapping(value = "/get2/{city}/{country}", method = RequestMethod.GET)
+    @RequestMapping(value = "/city/{city}/{country}", method = RequestMethod.GET)
     private Set<Employee> getEmployeeByCityAndCountry(@PathVariable String city, @PathVariable String country) {
         return employeeService.getEmployeeByCityAndCountry(city, country);
 
     }
 
-    @RequestMapping(value = "/get3/details", method = RequestMethod.GET)
+    @RequestMapping(value = "/salary/details", method = RequestMethod.GET)
     private List<EmployeeReport> getEmployeeSalary() {
         return employeeService.getEmployeeSalaryDetails();
 
     }
 
-    @RequestMapping(value = "/get4/details/{payable}", method = RequestMethod.GET)
+    @RequestMapping(value = "/payable/details/{payable}", method = RequestMethod.GET)
     private List<EmployeeReport> getEmployeeSalary(@PathVariable String payable) {
         return employeeService.getEmployeeSalaryDetails(payable);
 
     }
 
-    @RequestMapping(value = "/get5/NoOfDays/{date}", method = RequestMethod.GET)
+    @RequestMapping(value = "/holiday/NoOfDays/{date}", method = RequestMethod.GET)
     private List<EmployeeHolidaysOffJan> getEmployeeNoOfDays(@PathVariable String date) {
         return employeeService.getEmployeeNoOfDays(date);
 
