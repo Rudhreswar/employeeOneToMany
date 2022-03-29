@@ -35,12 +35,16 @@ public class EmployeeService {
 
         //Adding Details ..............................................................add ...!
 
+        List<EmployeeAddressEntity> employeeAddressEntities = new LinkedList<>();
+
         EmployeeEntity employeeEntity = new EmployeeEntity();
 
         employeeEntity.setEmployeeId(employee.getId());
         employeeEntity.setEmpName(employee.getEmpName());
         employeeEntity.setEmpEmail(employee.getEmpEmail());
-        List<EmployeeAddressEntity> employeeAddressEntities = new LinkedList<>();
+
+
+
         employee.getEmployeeAddresses().stream().forEach(employee1 ->
         {
             EmployeeAddressEntity employee2 = new EmployeeAddressEntity();
@@ -50,8 +54,12 @@ public class EmployeeService {
             employee2.setCity(employee1.getCity());
             employee2.setCountry(employee1.getCountry());
             employee2.setEmployeeEntity(employeeEntity);
+
             employeeAddressEntities.add(employeeAddressRepository.save(employee2));
         });
+
+employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
+        //................................................
 
         List<EmployeeAttendanceEntity> employeeAttendanceEntityList = new LinkedList<>();
         employee.getEmployeeAttendances().stream().forEach(employeeAttendance -> {
@@ -63,12 +71,14 @@ public class EmployeeService {
             employeeAttendanceEntityList.add(employeeAttendanceRepository.save(employeeAttendance1));
 
         });
+        employeeEntity.setEmployeeAttendanceEntities(employeeAttendanceEntityList);
 
         EmployeeSalaryEntity employeeSalaryEntity = new EmployeeSalaryEntity();
         employeeSalaryEntity.setSalary(employee.getEmployeeSalary().getSalary());
         employeeSalaryEntity.setPayable(employee.getEmployeeSalary().getPayable());
         employeeEntity.setEmployeeSalary(employeeSalaryEntity);
         employeeSalaryEntity.setEmployeeEntity(employeeEntity);
+
         employeeSalaryRepository.save(employeeSalaryEntity);
 
         employeeEntityRepository.save(employeeEntity);
@@ -79,11 +89,11 @@ public class EmployeeService {
         Set<EmployeeEntity> employeeEntitySet = employeeAddressEntityLinkedList.stream()
                 .map(EmployeeAddressEntity::getEmployeeEntity)
                 .collect(Collectors.toSet());
-        return employeeEntitySet.stream().map(this::setEmployee)
+        return employeeEntitySet.stream().map(this::getEmployee)
                 .collect(Collectors.toSet());
     }
 
-    public Employee setEmployee(EmployeeEntity employeeEntity) {
+    public Employee getEmployee(EmployeeEntity employeeEntity) {
         Employee employeeDetails = new Employee();
         employeeDetails.setId(employeeEntity.getEmployeeId());
         employeeDetails.setEmpName(employeeEntity.getEmpName());
@@ -128,13 +138,13 @@ public class EmployeeService {
 
         return stringSet.stream().map(eCity -> employeeEntityRepository.findById(eCity).orElse(null))
                 .filter(Objects::nonNull)
-                .map(this::setEmployee).collect(Collectors.toSet());
+                .map(this::getEmployee).collect(Collectors.toSet());
     }
 
     public Set<Employee> getEmployeeByCityAndCountry(String city, String country) {
         LinkedList<EmployeeAddressEntity> a = employeeAddressRepository.findByCityAndCountry(city, country);
         return a.stream().map(EmployeeAddressEntity::getEmployeeEntity)
-                .map(this::setEmployee)
+                .map(this::getEmployee)
                 .collect(Collectors.toSet());
     }
 
