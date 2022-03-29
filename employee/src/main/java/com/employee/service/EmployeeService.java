@@ -58,7 +58,7 @@ public class EmployeeService {
             employeeAddressEntities.add(employeeAddressRepository.save(employee2));
         });
 
-employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
+         employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
         //................................................
 
         List<EmployeeAttendanceEntity> employeeAttendanceEntityList = new LinkedList<>();
