@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Repository
-public interface EmployeeAddressRepository extends JpaRepository<EmployeeAddressEntity, String> {
+public interface EmployeeAddressEntityRepository extends JpaRepository<EmployeeAddressEntity, String> {
 
     LinkedList<EmployeeAddressEntity> findEmployeeAddressByCountry(String country);
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.LinkedList;
 
 @Repository
-public interface EmployeeSalaryRepository extends JpaRepository<EmployeeSalaryEntity, String> {
+public interface EmployeeSalaryEntityRepository extends JpaRepository<EmployeeSalaryEntity, String> {
 
     LinkedList<EmployeeSalaryEntity> findByPayable(String payable);
 }

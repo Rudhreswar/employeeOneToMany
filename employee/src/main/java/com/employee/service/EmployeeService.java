@@ -6,10 +6,10 @@ import com.employee.entity.EmployeeAttendanceEntity;
 import com.employee.entity.EmployeeEntity;
 import com.employee.entity.EmployeeSalaryEntity;
 import com.employee.model.*;
-import com.employee.repository.EmployeeAddressRepository;
-import com.employee.repository.EmployeeAttendanceRepository;
+import com.employee.repository.EmployeeAddressEntityRepository;
+import com.employee.repository.EmployeeAttendanceEntityRepository;
 import com.employee.repository.EmployeeEntityRepository;
-import com.employee.repository.EmployeeSalaryRepository;
+import com.employee.repository.EmployeeSalaryEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +25,11 @@ public class EmployeeService {
     @Autowired
     private EmployeeEntityRepository employeeEntityRepository;
     @Autowired
-    private EmployeeAddressRepository employeeAddressRepository;
+    private EmployeeAddressEntityRepository employeeAddressEntityRepository;
     @Autowired
-    private EmployeeAttendanceRepository employeeAttendanceRepository;
+    private EmployeeAttendanceEntityRepository employeeAttendanceEntityRepository;
     @Autowired
-    private EmployeeSalaryRepository employeeSalaryRepository;
+    private EmployeeSalaryEntityRepository employeeSalaryEntityRepository;
 
     public void addDetails(Employee employee) {
 
@@ -44,7 +44,6 @@ public class EmployeeService {
         employeeEntity.setEmpEmail(employee.getEmpEmail());
 
 
-
         employee.getEmployeeAddresses().stream().forEach(employee1 ->
         {
             EmployeeAddressEntity employee2 = new EmployeeAddressEntity();
@@ -55,11 +54,11 @@ public class EmployeeService {
             employee2.setCountry(employee1.getCountry());
             employee2.setEmployeeEntity(employeeEntity);
 
-            employeeAddressEntities.add(employeeAddressRepository.save(employee2));
+            employeeAddressEntities.add(employeeAddressEntityRepository.save(employee2));
         });
 
-employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
-        //................................................
+        employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
+
 
         List<EmployeeAttendanceEntity> employeeAttendanceEntityList = new LinkedList<>();
         employee.getEmployeeAttendances().stream().forEach(employeeAttendance -> {
@@ -68,7 +67,7 @@ employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
             employeeAttendance1.setHoliday(employeeAttendance.isHoliday());
             employeeAttendance1.setReasonForHoliday(employeeAttendance.getReasonForHoliday());
             employeeAttendance1.setEmployeeEntity(employeeEntity);
-            employeeAttendanceEntityList.add(employeeAttendanceRepository.save(employeeAttendance1));
+            employeeAttendanceEntityList.add(employeeAttendanceEntityRepository.save(employeeAttendance1));
 
         });
         employeeEntity.setEmployeeAttendanceEntities(employeeAttendanceEntityList);
@@ -79,13 +78,13 @@ employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
         employeeEntity.setEmployeeSalary(employeeSalaryEntity);
         employeeSalaryEntity.setEmployeeEntity(employeeEntity);
 
-        employeeSalaryRepository.save(employeeSalaryEntity);
+        employeeSalaryEntityRepository.save(employeeSalaryEntity);
 
         employeeEntityRepository.save(employeeEntity);
     }
 
     public Set<Employee> getEmployeeByCountry(String country) {
-        LinkedList<EmployeeAddressEntity> employeeAddressEntityLinkedList = employeeAddressRepository.findEmployeeAddressByCountry(country);
+        LinkedList<EmployeeAddressEntity> employeeAddressEntityLinkedList = employeeAddressEntityRepository.findEmployeeAddressByCountry(country);
         Set<EmployeeEntity> employeeEntitySet = employeeAddressEntityLinkedList.stream()
                 .map(EmployeeAddressEntity::getEmployeeEntity)
                 .collect(Collectors.toSet());
@@ -114,7 +113,9 @@ employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
             employeeAddress.setPhoneNumber(employeeAddressE.getPhoneNumber());
             employeeAddresses.add(employeeAddress);
         });
+
         employeeDetails.setEmployeeAddresses(employeeAddresses);
+
         List<EmployeeAttendance> employeeAttendances = new LinkedList<>();
 
         employeeEntity.getEmployeeAttendanceEntities().forEach(employeeAttendanceEntity -> {
@@ -130,7 +131,7 @@ employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
     }
 
     public Set<Employee> getEmployeeByCity(String city1, String city2) {
-        List<EmployeeAddressEntity> employeeAddressEntities = employeeAddressRepository.findByCityOrCity(city1, city2);
+        List<EmployeeAddressEntity> employeeAddressEntities = employeeAddressEntityRepository.findByCityOrCity(city1, city2);
         Set<String> stringSet = employeeAddressEntities.stream()
                 .map(EmployeeAddressEntity::getEmployeeEntity)
                 .map(EmployeeEntity::getEmployeeId)
@@ -142,7 +143,7 @@ employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
     }
 
     public Set<Employee> getEmployeeByCityAndCountry(String city, String country) {
-        LinkedList<EmployeeAddressEntity> a = employeeAddressRepository.findByCityAndCountry(city, country);
+        LinkedList<EmployeeAddressEntity> a = employeeAddressEntityRepository.findByCityAndCountry(city, country);
         return a.stream().map(EmployeeAddressEntity::getEmployeeEntity)
                 .map(this::getEmployee)
                 .collect(Collectors.toSet());
@@ -162,7 +163,7 @@ employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
 
     public List<EmployeeReport> getEmployeeSalaryDetails(String payable) {
 
-        LinkedList<EmployeeSalaryEntity> salaryEntityLinkedList = employeeSalaryRepository.findByPayable(payable);
+        LinkedList<EmployeeSalaryEntity> salaryEntityLinkedList = employeeSalaryEntityRepository.findByPayable(payable);
         List<EmployeeEntity> emp = salaryEntityLinkedList.stream()
                 .map(EmployeeSalaryEntity::getEmployeeEntity)
                 .collect(Collectors.toList());
@@ -173,7 +174,7 @@ employeeEntity.setEmployeeAddressEntities(employeeAddressEntities);
 
     public List<EmployeeHolidaysOffJan> getEmployeeNoOfDays(String date) {
 
-        List<EmployeeAttendanceEntity> employeeAttendanceEntityStream = employeeAttendanceRepository.findAll();
+        List<EmployeeAttendanceEntity> employeeAttendanceEntityStream = employeeAttendanceEntityRepository.findAll();
         Set<String> stringSet = employeeAttendanceEntityStream.stream().filter(attendance -> attendance.getDate().contains(date))
                 .map(EmployeeAttendanceEntity::getEmployeeEntity).map(EmployeeEntity::getEmployeeId)
                 .collect(Collectors.toSet());
