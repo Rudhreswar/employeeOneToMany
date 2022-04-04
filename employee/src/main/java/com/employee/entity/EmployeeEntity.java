@@ -28,16 +28,16 @@ public class EmployeeEntity {
     private String empEmail;
 
 
-    @OneToMany(/*targetEntity = EmployeeAddressEntity.class,*/ cascade = CascadeType.ALL)
-    @JoinColumn(name = "Emp_Addresses_Fk", referencedColumnName = "employeeId_pk")
+    @OneToMany(/*targetEntity = EmployeeAddressEntity.class,*/ cascade = CascadeType.ALL, mappedBy = "employeeEntityAddress")
+    // @JoinColumn(name = "Emp_Addresses_Fk", referencedColumnName = "employeeId_pk")
     private List<EmployeeAddressEntity> employeeAddressEntities;
 
-    @OneToMany(/*targetEntity = EmployeeAttendanceEntity.class,*/ cascade = CascadeType.ALL)
-    @JoinColumn(name = "Emp_Attendance_FK" /*, referencedColumnName = "employeeId_pk"*/)
+    @OneToMany(/*targetEntity = EmployeeAttendanceEntity.class,*/ cascade = CascadeType.ALL, mappedBy = "employeeEntityAttendance")
+    // @JoinColumn(name = "Emp_Attendance_FK" /*, referencedColumnName = "employeeId_pk"*/)
     private List<EmployeeAttendanceEntity> employeeAttendanceEntities;
 
-    @OneToOne(/*targetEntity = EmployeeSalaryEntity.class,*/ cascade = CascadeType.ALL)
-    @JoinColumn(name = "Emp_sal_Fk"/*, referencedColumnName = "employeeId"*/)
+    @OneToOne(/*targetEntity = EmployeeSalaryEntity.class,*/ cascade = CascadeType.ALL, mappedBy = "employeeEntitySal")
+    // @JoinColumn(name = "Emp_sal_Fk"/*, referencedColumnName = "employeeId"*/)
     private EmployeeSalaryEntity employeeSalary;
 
 }

@@ -1,6 +1,7 @@
 package com.employee.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class EmployeeSalaryEntity {
     private Double salary;
     private String payable;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
-    private EmployeeEntity employeeEntity;
+    private EmployeeEntity employeeEntitySal;
 }

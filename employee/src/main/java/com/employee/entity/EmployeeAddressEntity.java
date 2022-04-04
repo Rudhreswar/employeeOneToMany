@@ -1,5 +1,6 @@
 package com.employee.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,8 @@ public class EmployeeAddressEntity {
     @Column(name = "Country")
     private String country;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    private EmployeeEntity employeeEntity;
+    private EmployeeEntity employeeEntityAddress;
 
 }
